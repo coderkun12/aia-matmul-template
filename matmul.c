@@ -266,8 +266,7 @@ int main(int argc, char *argv[])
     srand(42);
     printf("MatMul Benchmark: Square Matrix\n");
 
-    // int sizes[] = {2048, 1024, 512, 256, 128, 64};
-    int sizes[] = {1024};
+    int sizes[] = {2048, 1024, 512, 256, 128, 64};
     int n = sizeof(sizes) / sizeof(sizes[0]);
 
     printf("%-8s %-15s %-15s %-15s %-15s\n", "Size", "Naive", "Reordered", "Tiled", "Parallel");
@@ -285,10 +284,10 @@ int main(int argc, char *argv[])
         initialize_matrix(B, K, N);
 
         // --- 1. Naive ---
-        // memset(C, 0, M * N * sizeof(float));
+        memset(C, 0, M * N * sizeof(float));
 
-        // float t_naive = benchmark(matmul_naive, A, B, C, M, N, K);
-        // double g_naive = calculate_gflops(M, N, K, t_naive);
+        float t_naive = benchmark(matmul_naive, A, B, C, M, N, K);
+        double g_naive = calculate_gflops(M, N, K, t_naive);
 
         // --- 2. Tiled ---
         memset(C, 0, M * N * sizeof(float));
@@ -297,19 +296,18 @@ int main(int argc, char *argv[])
         double g_blocking = calculate_gflops(M, N, K, t_blocking);
 
         // --- 3. Reordered ---
-        // memset(C, 0, M * N * sizeof(float));
+        memset(C, 0, M * N * sizeof(float));
 
-        // float t_reorder = benchmark(matmul_looporder, A, B, C, M, N, K);
-        // double g_reorder = calculate_gflops(M, N, K, t_reorder);
+        float t_reorder = benchmark(matmul_looporder, A, B, C, M, N, K);
+        double g_reorder = calculate_gflops(M, N, K, t_reorder);
 
         // --- 4. Parallel ---
-        // memset(C, 0, M * N * sizeof(float));
+        memset(C, 0, M * N * sizeof(float));
 
-        // float t_parallel = benchmark(matmul_parallel_ikj, A, B, C, M, N, K);
-        // double g_parallel = calculate_gflops(M, N, K, t_parallel);
+        float t_parallel = benchmark(matmul_parallel_ikj, A, B, C, M, N, K);
+        double g_parallel = calculate_gflops(M, N, K, t_parallel);
 
-        // printf("%d\t%.2f GFLOPS\t%.2f GFLOPS\t%.2f GFLOPS\t%.2f GFLOPS\n", M, g_naive, g_reorder, g_blocking, g_parallel);
-        printf("%d\t%.2f GFLOPS\t%.2f GFLOPS\t%.2f GFLOPS\t%.2f GFLOPS\n", M, 0.0, 0.0, g_blocking, 0.0);
+        printf("%d\t%.2f GFLOPS\t%.2f GFLOPS\t%.2f GFLOPS\t%.2f GFLOPS\n", M, g_naive, g_reorder, g_blocking, g_parallel);
 
         free(A);
         free(B);
